@@ -7,4 +7,24 @@ export function createCategory(req, res) {
     });
     return;
   }
+  if (req.user.type != "admin") {
+    res.status(401).send({
+      message: "Forbiden",
+    });
+  }
+  const newCategory = new Category(req.body);
+  newCategory
+    .save()
+    .then((result) => {
+      res.json({
+        message: "Category created Successfully",
+        result: result,
+      });
+    })
+    .catch((err) => {
+      res.json({
+        message: "Category creation failed.",
+        error: err,
+      });
+    });
 }
