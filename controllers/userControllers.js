@@ -1,6 +1,9 @@
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export function postUsers(req, res) {
   const user = req.body;
@@ -8,7 +11,7 @@ export function postUsers(req, res) {
   const password = req.body.password;
 
   const passwordHash = bcrypt.hashSync(password, 10);
- 
+
   user.password = passwordHash;
   const newUser = new User(user);
   newUser
@@ -30,28 +33,29 @@ export function loginUser(req, res) {
 
   User.findOne({
     email: credentials.email,
-    password:passwordHash,
+    password: passwordHash,
   }).then((user) => {
     if (User == null) {
       res.status(403).json({
         message: "User not found",
       });
     } else {
-      const isPasswordValid=bcrypt.compareSync
-      (credentials.password, user.password);
+      const isPasswordValid = bcrypt.compareSync(
+        credentials.password,
+        user.password
+      );
       if (isPasswordValid) {
-       res.status(403).json({
-        message: "Incorrecr Password",
-       })
-      }else {
-        const payload={
+        res.status(403).json({
+          message: "Incorrecr Password",
+        });
+      } else {
+        const payload = {
           id: user._id,
           email: user.email,
           type: user.type,
-        }
-       
-      };
-      const token = jwt.sign(payload, "secret", { expiresIn: "1h" });
+        };
+      }
+      const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: "1h" });
       res.json({
         message: "User found",
         user: user,
