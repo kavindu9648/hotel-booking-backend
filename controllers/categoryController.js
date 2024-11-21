@@ -17,13 +17,13 @@ export function createCategory(req, res) {
     .save()
     .then((result) => {
       res.json({
-        message: "Category created Successfully",
+        message: "created Successfully",
         result: result,
       });
     })
     .catch((err) => {
       res.json({
-        message: "Category creation failed.",
+        message: "Creation failed.",
         error: err,
       });
     });
